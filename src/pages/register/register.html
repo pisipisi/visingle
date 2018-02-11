@@ -1,0 +1,29 @@
+<!--
+  Generated template for the RegisterPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-content padding class="bg-login" scroll="false" [ngStyle]="{height: iframeHeight + 'px'}">
+  <div class="wrapper nop-nom" fit vertical layout justified>
+    <div class="login-logo" >
+      <div id="photo-upload" (click)="presentActionSheet()" class="upload animated fadeIn">
+        <ion-icon ios="ios-add" md="md-add"></ion-icon>
+      </div>
+    </div>
+    <div class="login-form animated fadeIn">
+      <ion-input type="text" class="login-input" [(ngModel)]="reg_name" placeholder="{{lname}}"></ion-input>
+      <ion-input type="text" class="login-input" [(ngModel)]="reg_email" placeholder="{{lemail}}"></ion-input>
+      <ion-input type="password" id="regpass" [(ngModel)]="reg_pass" (input)="passwordChange($event.target.value)" required class="login-input" placeholder="{{lpass}}"></ion-input>
+      <div class="login-btn" [ngClass]="{active: isActive}" *ngIf="!regBtn" (click)="next(reg_name, reg_email, reg_pass)" style="text-align: center;">
+        <span>{{nexttext}}</span>
+      </div>	
+      <div class="login-loader" *ngIf="regBtn" style="text-align: center;">
+        <div class="loader02"></div>
+      </div>		
+    </div>
+    <div class="login-footer" nav-transition="none" (click)="backToLogin()">
+      <p><span>{{alreadyHas}}</span> <b>{{loginTxt}}</b></p>
+    </div>
+  </div> 
+</ion-content>

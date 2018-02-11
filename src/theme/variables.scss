@@ -4,7 +4,9 @@
 // Font path is used to include ionicons,
 // roboto, and noto sans fonts
 $font-path: "../assets/fonts";
-
+@import url("https://fonts.googleapis.com/css?family=Roboto");
+@import url("https://fonts.googleapis.com/css?family=Montserrat&subset=latin,latin-ext");
+@import url('https://fonts.googleapis.com/css?family=Lato');
 
 // The app direction is used to include
 // rtl styles in your app. For more info, please see:
@@ -40,8 +42,40 @@ $colors: (
   light:      #f4f4f4,
   dark:       #222
 );
+.wrapper {
+  padding: 15px; 
+};
 
 
+html [fit] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+};
+
+html [layout][justified] {
+    -ms-flex-pack: justify;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+};
+
+html [layout][vertical] {
+      -ms-flex-direction: column;
+      -webkit-flex-direction: column;
+      flex-direction: column; };
+
+html [layout][vertical][reverse] {
+        -ms-flex-direction: column-reverse;
+        -webkit-flex-direction: column-reverse;
+        flex-direction: column-reverse; 
+      };
+html [layout][horizontal], html [layout][vertical] {
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex; };
+      
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here
@@ -84,5 +118,5 @@ $colors: (
 // Fonts
 // --------------------------------------------------
 
-@import "roboto";
-@import "noto-sans";
+//@import "roboto";
+//@import "noto-sans";
