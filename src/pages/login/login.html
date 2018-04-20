@@ -12,7 +12,7 @@
     </div>
       <div class="login-form animated fadeIn">
           <ion-input class="login-input" placeholder="{{lemail}}" [(ngModel)]="login_email"></ion-input>
-          <ion-input type="password" class="login-input" placeholder="{{lpass}}" id="pass" [(ngModel)]="login_pass" (input)="passwordChange($event.target.value)" [hidden]="forgetBtn" required></ion-input>
+          <ion-input type="password" class="login-input" placeholder="{{lpass}}" id="pass" [(ngModel)]="login_pass" #pass="ngModel" (input)="passwordChange($event.target.value)" [hidden]="forgetBtn" required></ion-input>
           <div class="login-btn" style="text-align: center;" [ngClass]="{active: isActive}" *ngIf="!loginBtn" (click)="send(login_email,login_pass)">
               <span>{{logintext}}</span>
           </div>

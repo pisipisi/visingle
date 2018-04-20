@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, ToastController } from 'ionic-angular';
 import { MatchesPage } from '../matches/matches';
 import { SettingsPage } from '../settings/settings';
 import { AuthService } from "../../providers/auth-service";
 import { DomSanitizer } from '@angular/platform-browser';
+import { Http } from '@angular/http';
+import { StackConfig, Stack, Card, ThrowEvent, DragEvent, SwingStackComponent, SwingCardComponent} from 'angular2-swing';
+import 'rxjs/Rx';
 /**
  * Generated class for the ExplorePage page.
  *
@@ -17,6 +20,8 @@ import { DomSanitizer } from '@angular/platform-browser';
   templateUrl: 'explore.html',
 })
 export class ExplorePage {
+  @ViewChild('myswing1') swingStack: SwingStackComponent;
+  @ViewChildren('mycards1') swingCards: QueryList<SwingCardComponent>;
   url:any;
   user:any;
   lang:any;
@@ -30,6 +35,8 @@ export class ExplorePage {
   isMoveLeft:any;
   isMoveRight:any;
   cards=Array();
+  stackConfig: StackConfig;
+  recentCard: string = '';
   logo:any;
   ad1:boolean;
   loading:string;
@@ -52,6 +59,17 @@ export class ExplorePage {
     this.discoverChat = true;
     this.discoverSlike = true;
     this.uphoto = this.sanitizer.bypassSecurityTrustStyle(`url(${this.user.profile_photo})`);
+    this.stackConfig = {
+      throwOutConfidence: (offsetX, offsetY, element) => {
+        return Math.min(Math.abs(offsetX) / (element.offsetWidth/2), 1);
+      },
+      transform: (element, x, y, r) => {
+        this.onItemMove(element, x, y, r);
+      },
+      throwOutDistance: (d) => {
+        return 800;
+      }
+    };
   }
   ngAfterViewInit() {
     this.cards = [];
@@ -61,11 +79,85 @@ export class ExplorePage {
         this.cards = response.game;			
         this.cu = this.cards[0].id;
         this.cu2 = this.cards[0];
-        this._addCards(2);
+        this._addCards(1);
+      });
+      // Either subscribe in controller or set in HTML
+      this.swingStack.throwin.subscribe((event: DragEvent) => {
+        event.target.style.background = '#ffffff';
       });
     } catch (err) {
         console.log("Error " + err);
     }
+  }
+  // Called whenever we drag an element
+  onItemMove(element, x, y, r) {
+    var color = '';
+    var abs = Math.abs(x);
+    let min = Math.trunc(Math.min(16*16 - abs, 16*16));
+    let hexCode = this.decimalToHex(min, 2);
+    var leftText = element.querySelector('.no-text');
+    var rightText = element.querySelector('.yes-text');
+    var parentWidth = element.offsetWidth;
+    var amt = (x/(parentWidth/2));
+    if (x < 0) {
+      color = '#FF' + hexCode + hexCode;
+      if (leftText) leftText.style.opacity = this.fadeFn(-amt);
+      if (rightText) rightText.style.opacity = 0;
+    } else {
+      color = '#' + hexCode + 'FF' + hexCode;
+      if (leftText) leftText.style.opacity = 0;
+      if (rightText) rightText.style.opacity = this.fadeFn(amt);
+    }
+    this.isMoveLeft = amt < -0.15;
+    this.isMoveRight = amt > 0.15;  
+    element.style.background = color;
+    element.style['transform'] = `translate3d(0, 0, 0) translate(${x}px, ${y}px) rotate(${r}deg)`;
+  }
+  fadeFn(t) {
+    // Speed up time to ramp up quickly
+    t = Math.min(1, t * 3);
+
+    // This is a simple cubic bezier curve.
+    // http://cubic-bezier.com/#.11,.67,.41,.99
+    var c1 = 0,
+        c2 = 0.67,
+        c3 = 0.41,
+        c4 = 0.99;
+
+    return Math.pow((1 - t), 3)*c1 + 3*Math.pow((1 -  t), 2)*t*c2 + 3*(1 - t)*t*t*c3 + Math.pow(t, 3)*c4;
+  }
+  // Connected through HTML
+  voteUp(like: boolean) {
+    let removedCard = this.cards.pop();
+    this.isMoveLeft = false;
+    this.isMoveRight = false;
+  //  this._addCards(1);
+    if (like) {
+      this.recentCard = 'You liked: ' + removedCard.email;
+      if (removedCard.isFan == 1) {
+        this.openMatchModal();
+        var w = window.innerWidth;
+        w = w/3;
+        this.alang.forEach(function(entry) {					  
+          this.alang.push({
+            id: entry,
+            text: entry.text
+          })
+        })	 
+      }
+    } else {
+      this.recentCard = 'You disliked: ' + removedCard.email;
+    }
+  }
+  decimalToHex(d, padding) {
+    var hex = Number(d).toString(16);
+    padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
+    
+    while (hex.length < padding) {
+      hex = "0" + hex;
+    }
+    
+    return hex;
   }
   ionViewDidLoad() {
     if(this.app.ads){
@@ -101,15 +193,10 @@ export class ExplorePage {
       w = 200;
     }
     this.w = w;
-  
     // s_age = user.sage;
     // user_country = user.country;
     // user_city = user.city;	
-    
     this.superLike = this.user.slike;
-  
-
-    
     this.loading = this.alang[8].text;
    // this.cards = [];
     

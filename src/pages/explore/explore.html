@@ -13,13 +13,13 @@
           </button>
       </ion-buttons> -->
       <ion-buttons left>
-          <button ion-button icon-only>
+          <button ion-button icon-only (click)="goToSettings()">
               <img src="../../assets/imgs/profile.jpg" width="34px" />
           </button>
       </ion-buttons>
     <ion-title><img src="{{logo}}" height="34px" style="margin-top:5px" alt=""></ion-title>
     <ion-buttons right>
-        <button ion-button icon-only (click)="openModal()">
+        <button ion-button icon-only (click)="goToChat()">
             <img src="../../assets/imgs/chat-icon.png" width="34px" />
         </button>
     </ion-buttons>
@@ -29,67 +29,116 @@
 
 
 <ion-content on-swipe-left="goToChat()" on-swipe-right="goToSettings()" vertical layout scroll="false"  style="background:#F6F7FC"  padding>
-    <div class="card-container text-center" flex relative vertical layout>
-        <div *ngIf="noSlike" >
-          <div class="credits-section text-center animated fadeInUp" >
-            <h5 class="mi-pollita" style="color:#BFC5D5"></h5>					
-            <div class="wrapper text-center">
-              <div class="pos-rlt">
-              <div class="thumb-xxl rounded profileP border-profile" style="background-image:url({{slikephoto}});height:{{w}}px;width:{{w}}px;" ></div>
-              <i class="icon ion-arrow-up-c button-edit light text-lg b b-3x b-light b-2x rounded" style="background:#275BDF"></i>							
-              </div>
-            </div>						
-            <h1>Uhm...</h1>
-            <h4>You dont have enough Super likes</h4>
-            <span class="spotlight-me" (click)="buySlike()" style="background:#275BDF;border:#025BDF">Buy 10 Super Likes</span>
-            <span class="spotlight-me" (click)="noBtnSlike()" style="background:#dedede;border:#d0d0d0">No thanks</span>
-            <br><h4>Cost <b>400</b> Credits</h4>                    
+  <div class="card-container text-center" flex relative vertical layout>
+    <div *ngIf="noSlike" >
+      <div class="credits-section text-center animated fadeInUp" >
+        <h5 class="mi-pollita" style="color:#BFC5D5"></h5>					
+        <div class="wrapper text-center">
+          <div class="pos-rlt">
+          <div class="thumb-xxl rounded profileP border-profile" style="background-image:url({{slikephoto}});height:{{w}}px;width:{{w}}px;" ></div>
+          <i class="icon ion-arrow-up-c button-edit light text-lg b b-3x b-light b-2x rounded" style="background:#275BDF"></i>							
           </div>
-        </div>	
-          <div  *ngIf="cards.length == 0 && !noSlike" vertical layout center flex style="z-index:99" (click)="openSettingsModal()" >
-            <div flex horizontal layout center >
-              <div class="load" >
+        </div>						
+        <h1>Uhm...</h1>
+        <h4>You dont have enough Super likes</h4>
+        <span class="spotlight-me" (click)="buySlike()" style="background:#275BDF;border:#025BDF">Buy 10 Super Likes</span>
+        <span class="spotlight-me" (click)="noBtnSlike()" style="background:#dedede;border:#d0d0d0">No thanks</span>
+        <br><h4>Cost <b>400</b> Credits</h4>                    
+      </div>
+    </div>	
+    <div  *ngIf="cards.length == 0 && !noSlike" vertical layout center flex style="z-index:99" (click)="openSettingsModal()" >
+      <div flex horizontal layout center >
+        <div class="load" >
           <img class="thumb-lg rounded b b-5x b-light box-shadow profilePhoto" *ngIf="uphoto" [style.background-image]="uphoto" style="width:96px;height:96px;"/>		  
+        </div>
+      </div>
+      <div class="text-muted text-center l-h">
+        {{loading}}
+      </div>
+    </div>
+    <div fit class="td-cards" swing-stack #myswing1 [stackConfig]="stackConfig" (throwoutleft)="voteUp(true)" (throwoutright)="voteUp(false)" >
+        <div #mycards1 swing-card *ngFor="let c of cards" class="td-card">
+          <div class="card-tinder bg-white" vertical layout (click)="openProfileModal(c.id,'c.name','c.photo',c.age,'c.city')">
+            <div flex class="div-img" [ngStyle]="{'background-image': 'url(' + c.photo + ')'}"></div>  
+            <div class="row caption text-lg l-h">
+              <div class="col-80 text-left">
+                <div class="text mi-pollita padding-top" >{{c.name}}, {{c.age}} <span class="chat-status" *ngIf="c.status == 1" style="background:#51B80E" ></span></div>
+                <div class="text-muted mi-pollita" style="font-size:14px;">{{c.city}}</div>
               </div>
-            </div>
-            <div class="text-muted text-center l-h">
-              {{loading}}
+              <div class="col-20 text-muted text-xl text-right">
             </div>
           </div>
-          
-          
-          
+          <div class="no-text">
+            <span class="wrapper-xs b b-danger b-5x r-3x assertive font-bold text-3x mi-pollita">{{alang[34].text}}</span>
+          </div>
+          <div class="yes-text">
+            <span class="wrapper-xs b b-success b-5x r-3x balanced font-bold text-3x mi-pollita">{{alang[35].text}}</span>
+          </div>
         </div>
-        <div class="ad1" *ngIf="ad1">
-          <div [innerHTML]="ads"></div>
-        </div>
-        <div class="card-actions padder-copatene" *ngIf="!noSlike" horizontal layout around-justified center>
-    
-          <div class="card-action" *ngIf="discoverChat">
-            <button class="button button-light rounded" (click)="chatUser('home.messaging','right',cu2)">
-              <img src="../../assets/imgs/gchat.png" width="32px" [ngClass]="cards.length == 0 ? 'grayScale' : 'balanced'"   />
-            </button>
-          </div>
-    
-          <div class="card-action bigger-button">
-            <button class="button button-large button-light rounded s" [ngClass]="{zoom: isMoveLeft}" (click)="nolike();cardDestroyed(0,0);">
-              <img src="../../assets/imgs/gno.jpg" [ngClass]="cards.length == 0 ? 'grayScale' : 'balanced'"  />
-            </button>
-          </div>
-    
-          <div class="card-action bigger-button">
-            <button class="button button-large button-light rounded cardlike" [ngClass]="{zoom: isMoveRight}" (click)="like();cardDestroyed(0,1);">
-              <img src="../../assets/imgs/gyes.jpg" [ngClass]="cards.length == 0 ? 'grayScale' : 'balanced'"  />
-            </button>
-          </div>
-    
-          <div class="card-action" *ngIf="discoverSlike">
-            <div class="slike" *ngIf="superLike > 0 && superLike < 10"><span style="font-size:14px;margin-left:6px">{{superLike}}</span></div>
-            <div class="slike" *ngIf="superLike >= 10"><span style="font-size:12px;">{{superLike}}</span></div>		
-                <button class="button button-light rounded" (click)="slike();">
-                  <img src="../../assets/imgs/slike.jpg" width="32px" [ngClass]="cards.length == 0 ? 'grayScale' : 'balanced'"   />
+      </div>
+    </div>
+      <!-- <div fit swing-stack #myswing1 [stackConfig]="stackConfig" (throwoutleft)="voteUp(true)" (throwoutright)="voteUp(false)" id="card-stack">
+          <ion-card #mycards1 swing-card *ngFor="let c of cards">
+              <div flex class="div-img" [ngStyle]="{'background-image': 'url(' + c.photo + ')'}"></div>  
+            <ion-item *ngIf="c.photo">
+              <ion-avatar item-left>
+                <img *ngIf="c.picture"[src]="c.picture.medium">
+              </ion-avatar>
+              <h2>{{ c.name}}</h2>
+              <p>{{ c.email }}</p>
+            </ion-item>
+       
+            <ion-card-content *ngIf="c.location">
+              From: {{ c.location.city }}, {{ c.location.postcode }}<br>
+              Phone: {{ c.phone }}
+            </ion-card-content>
+       
+            <ion-row *ngIf="c.name">
+              <ion-col>
+                <button ion-button clear small icon-left color="primary" (click)="voteUp(true)">
+                  <ion-icon name="thumbs-up"></ion-icon>
+                  Yes
                 </button>
-          </div>
-    
-        </div>
+              </ion-col>
+              <ion-col>
+                <button ion-button clear small icon-left color="primary" (click)="voteUp(false)">
+                  <ion-icon name="thumbs-down"></ion-icon>
+                  No
+                </button>
+              </ion-col>
+            </ion-row>
+          </ion-card>
+        </div> -->
+  </div>
+  
+  <div class="ad1" *ngIf="ad1">
+    <div [innerHTML]="ads"></div>
+  </div>
+  <div class="card-actions padder-copatene" *ngIf="!noSlike" horizontal layout around-justified center>
+    <div class="card-action" *ngIf="discoverChat">
+      <button class="button button-light rounded" (click)="chatUser('home.messaging','right',cu2)">
+        <img src="../../assets/imgs/gchat.png" width="32px" [ngClass]="cards.length == 0 ? 'grayScale' : 'balanced'"   />
+      </button>
+    </div>
+
+    <div class="card-action bigger-button">
+      <button class="button button-large button-light rounded s" [ngClass]="{zoom: isMoveLeft}" (click)="nolike();cardDestroyed(0,0);">
+        <img src="../../assets/imgs/gno.jpg" [ngClass]="cards.length == 0 ? 'grayScale' : 'balanced'"  />
+      </button>
+    </div>
+
+    <div class="card-action bigger-button">
+      <button class="button button-large button-light rounded cardlike" [ngClass]="{zoom: isMoveRight}" (click)="like();cardDestroyed(0,1);">
+        <img src="../../assets/imgs/gyes.jpg" [ngClass]="cards.length == 0 ? 'grayScale' : 'balanced'"  />
+      </button>
+    </div>
+
+    <div class="card-action" *ngIf="discoverSlike">
+      <div class="slike" *ngIf="superLike > 0 && superLike < 10"><span style="font-size:14px;margin-left:6px">{{superLike}}</span></div>
+      <div class="slike" *ngIf="superLike >= 10"><span style="font-size:12px;">{{superLike}}</span></div>		
+      <button class="button button-light rounded" (click)="slike();">
+        <img src="../../assets/imgs/slike.jpg" width="32px" [ngClass]="cards.length == 0 ? 'grayScale' : 'balanced'"   />
+      </button>
+    </div>
+  </div>
 </ion-content>

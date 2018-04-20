@@ -24,6 +24,8 @@ export class LoginPage {
   logoLogin:any;
   lemail:any;
   lpass:any;
+  login_email:any;
+  login_pass:any;
   logintext:any;
   isActive:boolean;
   recovertext:string;
@@ -100,8 +102,9 @@ export class LoginPage {
       this.isActive = false;
     }
   }
-  send(email, pass) {
-    if(pass.length < 4){
+  send(email:string,pass:string) {
+  
+    if(pass == null || pass.length < 4){
       return false;
     }		
     //this.master = Object.assign({}, user);

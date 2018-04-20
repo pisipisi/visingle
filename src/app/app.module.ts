@@ -16,6 +16,7 @@ import { HomePage } from '../pages/home/home';
 import { LoaderPage } from '../pages/loader/loader';
 import { AuthService } from '../providers/auth-service';
 import { HttpModule } from "@angular/http";
+import { SwingModule } from 'angular2-swing';
 import { LoginPage } from '../pages/login/login';
 import { RegisterPage } from '../pages/register/register';
 import { Register2Page } from '../pages/register2/register2';
@@ -40,6 +41,7 @@ import { SettingsPage } from '../pages/settings/settings';
   imports: [
     BrowserModule,
     HttpModule,
+    SwingModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
